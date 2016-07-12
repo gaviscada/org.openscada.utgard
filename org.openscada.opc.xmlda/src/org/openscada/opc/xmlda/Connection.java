@@ -12,6 +12,8 @@ package org.openscada.opc.xmlda;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -149,6 +151,15 @@ public class Connection implements AutoCloseable
         context.put ( "com.sun.xml.internal.ws.connect.timeout", this.connectTimeout );
         context.put ( "com.sun.xml.internal.ws.request.timeout", this.requestTimeout );
         context.put ( BindingProvider.ENDPOINT_ADDRESS_PROPERTY, this.serverUrl.toString () );
+        List<String> userPassword = this.serverUrl.getUserInfo () == null ? Collections.<String>emptyList () : Arrays.asList( this.serverUrl.getUserInfo ().split ( ":" ) );
+        if ( userPassword.size() == 2 )
+        {
+        	context.put ( BindingProvider.PASSWORD_PROPERTY, userPassword.get ( 1 ) );
+        }
+        if ( userPassword.size() >= 1 )
+        {
+        	context.put ( BindingProvider.USERNAME_PROPERTY, userPassword.get ( 0 ) );
+        }
 
         return this.soap;
     }
